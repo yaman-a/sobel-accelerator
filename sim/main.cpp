@@ -24,8 +24,8 @@ int main() {
     // Release reset state
     top->rst = 0;
 
-    // Pass through input for 5 cycles
-    for (int i = 0; i < 5; i++) {
+    // Pass through input for 256 cycles
+    for (int i = 0; i < 256; i++) {
         // pass through 
         top->valid_in = 1;
         top->pixel_in = i * 20;
@@ -36,7 +36,11 @@ int main() {
         top->clk = 1;
         top->eval();
 
-        std::cout << "output: " << (int)top->pixel_out << std::endl;
+        // now we print the pixel output
+        std::cout << "col approx: " << i % 128
+        << " row approx: " << i / 128
+        << " out: " << (int)top->pixel_out
+        << std::endl;
     }
 
     delete top;
