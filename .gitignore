@@ -40,4 +40,4 @@
 # debug information files
 *.dwo
 
-/obj_dir
+obj_dir/
