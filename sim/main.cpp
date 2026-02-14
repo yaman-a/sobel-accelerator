@@ -25,7 +25,7 @@ int main() {
     top->rst = 0;
 
     // Pass through input for 256 cycles
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 384; i++) {
         // pass through 
         top->valid_in = 1;
         top->pixel_in = i * 20;

@@ -17,6 +17,10 @@ module sobel #(
     reg [7:0] line_buffer1 [0:WIDTH-1];
     reg [7:0] prev_row_pixel;
 
+    // second line buffer
+    reg [7:0] line_buffer2 [0:WIDTH-1];
+    reg [7:0] prev2_row_pixel;
+
 
 always @(posedge clk) begin
     if (rst) begin
@@ -25,15 +29,18 @@ always @(posedge clk) begin
         valid_out <= 0;
         pixel_out <= 0;
         prev_row_pixel <= 0;
+        prev2_row_pixel <= 0;
 
     end else begin
         if (valid_in) begin
 
             // read prev row pixel before overwriting
+            // vertical pipeline (top to bottom)
             prev_row_pixel <= line_buffer1[col];
-
-            // store current pixel into buffer
             line_buffer1[col] <= pixel_in;
+
+            prev2_row_pixel <= line_buffer2[col];
+            line_buffer2[col] <= prev_row_pixel;
 
             // increment column
             if (col == 7'd127) begin
@@ -43,8 +50,8 @@ always @(posedge clk) begin
                 col <= col + 1;
             end
 
-            // output previous row pixel for now
-            pixel_out <= prev_row_pixel;
+            // output 2 row delayed pixel for testing
+            pixel_out <= prev2_row_pixel;
             valid_out <= 1;
         end else begin
             valid_out <= 0;
