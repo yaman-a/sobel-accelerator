@@ -1,0 +1,13 @@
+# DESCRIPTION: Verilator output: Timestamp data for --skip-identical.  Delete at will.
+C "-Wall --cc rtl/sobel.v --exe sim/main.cpp --build"
+S   7892640   483580  1771053749   816253782  1598506306           0 "/usr/bin/verilator_bin"
+T      4184   455651  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel.cpp"
+T      2705   455649  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel.h"
+T      1753   455653  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel.mk"
+T      1795   455650  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel__Slow.cpp"
+T       539   455647  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel__Syms.cpp"
+T       781   455648  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel__Syms.h"
+T       237   455654  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel__ver.d"
+T         0        0  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel__verFiles.dat"
+T      1546   455652  1771056213   260067249  1771056213   260067249 "obj_dir/Vsobel_classes.mk"
+S       405     5619  1771056210   384065224  1771056210   384065224 "rtl/sobel.v"
