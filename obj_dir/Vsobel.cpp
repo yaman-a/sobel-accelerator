@@ -68,8 +68,20 @@ VL_INLINE_OPT void Vsobel::_sequent__TOP__1(Vsobel__Syms* __restrict vlSymsp) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vsobel::_sequent__TOP__1\n"); );
     Vsobel* const __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
-    vlTOPp->pixel_out = ((IData)(vlTOPp->rst) ? 0U : (IData)(vlTOPp->pixel_in));
-    vlTOPp->valid_out = ((~ (IData)(vlTOPp->rst)) & (IData)(vlTOPp->valid_in));
+    if (vlTOPp->rst) {
+        vlTOPp->valid_out = 0U;
+        vlTOPp->valid_out = 0U;
+    } else {
+        vlTOPp->valid_out = vlTOPp->valid_in;
+    }
+    if (vlTOPp->rst) {
+        vlTOPp->pixel_out = 0U;
+        vlTOPp->pixel_out = 0U;
+    } else {
+        if (vlTOPp->valid_in) {
+            vlTOPp->pixel_out = vlTOPp->pixel_in;
+        }
+    }
 }
 
 void Vsobel::_eval(Vsobel__Syms* __restrict vlSymsp) {
