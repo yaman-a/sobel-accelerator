@@ -26,6 +26,7 @@ int main() {
 
     // Pass through input for 5 cycles
     for (int i = 0; i < 5; i++) {
+        // pass through 
         top->valid_in = 1;
         top->pixel_in = i * 20;
 
