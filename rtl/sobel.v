@@ -10,7 +10,7 @@ module sobel #(
 );
 
     // column and row counters
-    reg [6:0] col; // 7 bits is fine for 128
+    reg [6:0] col;
     reg [15:0] row;
 
     // first line buffer (1 row delay)
@@ -21,6 +21,11 @@ module sobel #(
     reg [7:0] line_buffer2 [0:WIDTH-1];
     reg [7:0] prev2_row_pixel;
 
+    // 3x3 window shift registers
+    reg [7:0] r0_0, r0_1, r0_2;
+    reg [7:0] r1_0, r1_1, r1_2;
+    reg [7:0] r2_0, r2_1, r2_2;
+
 
 always @(posedge clk) begin
     if (rst) begin
@@ -28,8 +33,11 @@ always @(posedge clk) begin
         row <= 0;
         valid_out <= 0;
         pixel_out <= 0;
-        prev_row_pixel <= 0;
-        prev2_row_pixel <= 0;
+
+        r0_0 <= 0; r0_1 <= 0; r0_2 <= 0;
+        r1_0 <= 0; r1_1 <= 0; r1_2 <= 0;
+        r2_0 <= 0; r2_1 <= 0; r2_2 <= 0;
+
 
     end else begin
         if (valid_in) begin
@@ -42,6 +50,21 @@ always @(posedge clk) begin
             prev2_row_pixel <= line_buffer2[col];
             line_buffer2[col] <= prev_row_pixel;
 
+            // horizontal shift (bottom row)
+            r0_2 <= r0_1;
+            r0_1 <= r0_0;
+            r0_0 <= pixel_in;
+
+            // horizontal shift (middle row)
+            r1_2 <= r1_1;
+            r1_1 <= r1_0;
+            r1_0 <= prev_row_pixel;
+
+            // horizontal shift (top row)
+            r2_2 <= r2_1;
+            r2_1 <= r2_0;
+            r2_0 <= prev2_row_pixel;
+
             // increment column
             if (col == 7'd127) begin
                 col <= 0;
@@ -50,8 +73,8 @@ always @(posedge clk) begin
                 col <= col + 1;
             end
 
-            // output 2 row delayed pixel for testing
-            pixel_out <= prev2_row_pixel;
+            // output XOR of rightmost column of the 3x3
+            pixel_out <= r0_2 ^ r1_2 ^ r2_2;
             valid_out <= 1;
         end else begin
             valid_out <= 0;
