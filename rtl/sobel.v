@@ -9,6 +9,8 @@ module sobel #(
     output reg [7:0] pixel_out
 );
 
+    
+
     // column and row counters
     reg [6:0] col;
     reg [15:0] row;
@@ -25,6 +27,14 @@ module sobel #(
     reg [7:0] r0_0, r0_1, r0_2;
     reg [7:0] r1_0, r1_1, r1_2;
     reg [7:0] r2_0, r2_1, r2_2;
+
+    // sobel kernel declarations
+    reg signed [11:0] gx;
+    reg signed [11:0] gy;
+    reg signed [11:0] abs_gx;
+    reg signed [11:0] abs_gy;
+    reg [11:0] grad_mag;
+
 
 
 always @(posedge clk) begin
@@ -74,8 +84,34 @@ always @(posedge clk) begin
             end
 
             // output XOR of rightmost column of the 3x3
-            pixel_out <= r0_2 ^ r1_2 ^ r2_2;
-            valid_out <= 1;
+            
+            if (row >= 2 && col >= 2) begin
+                gx <= -$signed({1'b0,r2_2}) + $signed({1'b0,r2_0}) 
+                -($signed({1'b0,r1_2}) <<< 1) + ($signed({1'b0,r1_0}) <<< 1) 
+                -$signed({1'b0,r0_2}) + $signed({1'b0,r0_0});
+
+                gy <= $signed({1'b0,r2_2}) + ($signed({1'b0,r2_1}) <<< 1) 
+                + $signed({1'b0,r2_0}) -$signed({1'b0,r0_2}) 
+                - ($signed({1'b0,r0_1}) <<< 1) - $signed({1'b0,r0_0});
+
+                abs_gx <= (gx < 0) ? -gx : gx;
+                abs_gy <= (gy < 0) ? -gy : gy;
+
+                grad_mag <= abs_gx + abs_gy;
+
+                // clamp to 8 bit
+                if (grad_mag > 12'd255) begin
+                    pixel_out <= 8'd255;
+                end else begin
+                    pixel_out <= grad_mag[7:0];
+                end
+
+                valid_out <= 1;
+            end else begin
+                pixel_out <= 0;
+                valid_out <= 0;
+            end
+
         end else begin
             valid_out <= 0;
         end
