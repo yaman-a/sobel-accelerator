@@ -86,13 +86,14 @@ always @(posedge clk) begin
             // output XOR of rightmost column of the 3x3
             
             if (row >= 2 && col >= 2) begin
-                gx <= -$signed({1'b0,r2_2}) + $signed({1'b0,r2_0}) 
-                -($signed({1'b0,r1_2}) <<< 1) + ($signed({1'b0,r1_0}) <<< 1) 
-                -$signed({1'b0,r0_2}) + $signed({1'b0,r0_0});
+                gx <= -$signed({4'b0000,r2_2}) + $signed({4'b0000,r2_0})
+                    -($signed({4'b0000,r1_2}) <<< 1) + ($signed({4'b0000,r1_0}) <<< 1)
+                    -$signed({4'b0000,r0_2}) + $signed({4'b0000,r0_0});
 
-                gy <= $signed({1'b0,r2_2}) + ($signed({1'b0,r2_1}) <<< 1) 
-                + $signed({1'b0,r2_0}) -$signed({1'b0,r0_2}) 
-                - ($signed({1'b0,r0_1}) <<< 1) - $signed({1'b0,r0_0});
+                gy <= $signed({4'b0000,r2_2}) + ($signed({4'b0000,r2_1}) <<< 1)
+                    + $signed({4'b0000,r2_0}) - $signed({4'b0000,r0_2}) 
+                    - ($signed({4'b0000,r0_1}) <<< 1) - $signed({4'b0000,r0_0});
+
 
                 abs_gx <= (gx < 0) ? -gx : gx;
                 abs_gy <= (gy < 0) ? -gy : gy;
