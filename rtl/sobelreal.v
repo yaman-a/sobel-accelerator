@@ -59,13 +59,13 @@ always @(posedge clk) begin
         r2_0 <= 0; r2_1 <= 0; r2_2 <= 0;
 
     end else if (valid_in) begin
-        // read from buffers first
-        prev_row_pixel  <= line_buffer1[col];
-        prev2_row_pixel <= line_buffer2[col];
-
-        // write to buffers after using prev values
+        // line buffer pipeline
+        prev_row_pixel <= line_buffer1[col];
         line_buffer1[col] <= pixel_in;
-        line_buffer2[col] <= line_buffer1[col];
+
+        prev2_row_pixel <= line_buffer2[col];
+        line_buffer2[col] <= prev_row_pixel;
+
 
         // shift sliding window
         r0_2 <= r0_1;
@@ -89,14 +89,18 @@ always @(posedge clk) begin
         end
 
         // sobel output (only if window is valid)
-        // DEBUG: just output centre pixel of window
         if (row >= 2 && col >= 2) begin
             valid_out <= 1;
-            pixel_out <= r1_1;  // centre of 3x3
+
+            if (grad_wire > 12'd255) begin
+                pixel_out <= 8'd255;
+            end else begin
+                pixel_out <= grad_wire[7:0];
+            end
+
         end else begin
             valid_out <= 0;
         end
-
 
     end
 end
