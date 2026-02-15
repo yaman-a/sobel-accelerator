@@ -1,8 +1,8 @@
 import numpy as np
-from PIL import Image
 
-img = np.zeros((128,128), dtype=np.uint8)
-img[:, :64] = 0
-img[:, 64:] = 255
+img = np.random.randint(0,256,(128,128),dtype=np.uint8)
 
-Image.fromarray(img).save("images/edge.pgm")
+with open("noise.pgm", "w") as f:
+    f.write("P2\n128 128\n255\n")
+    for row in img:
+        f.write(" ".join(map(str,row)) + "\n")

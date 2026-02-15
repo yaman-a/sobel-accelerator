@@ -1,5 +1,5 @@
 // This will show up as an error, but it works i promise verilator needs these two lines to work
-#include "Vsobel.h"
+#include "Vsobel.h" // must match verilog module name with V as the prefix (e.g. module.v = Vmodule.h)
 #include "verilated.h"
 
 #include <iostream>

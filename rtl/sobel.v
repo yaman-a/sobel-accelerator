@@ -9,8 +9,10 @@ module sobel #(
     output reg [7:0] pixel_out
 );
 
+    localparam COL_BITS = $clog2(WIDTH);
+
     // column and row counters
-    reg [6:0] col;
+    reg [COL_BITS-1:0] col;
     reg [15:0] row;
 
     // line buffers
@@ -81,7 +83,7 @@ always @(posedge clk) begin
         r2_0 <= prev2_row_pixel;   
 
         //update counter
-        if (col == 7'd127) begin
+        if (col == COL_BITS'(WIDTH-1)) begin
             col <= 0;
             row <= row + 1;
         end else begin 
