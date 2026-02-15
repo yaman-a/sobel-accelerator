@@ -45,6 +45,7 @@ int main(int argc, char** argv) {
     // Create instance of the sobel verilator module
     // ---------------------------------------------
     Vsobel* top = new Vsobel; 
+    top->image_width = width;
 
     // Set initial states
     top->clk = 0;

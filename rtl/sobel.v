@@ -1,24 +1,25 @@
 module sobel #(
-    parameter WIDTH = 128
+    parameter MAX_WIDTH = 4096
 )(
     input wire clk,
     input wire rst,
     input wire valid_in,
     input wire [7:0] pixel_in,
+    input wire [$clog2(MAX_WIDTH)-1:0] image_width,
     output reg valid_out,
     output reg [7:0] pixel_out
 );
 
-    localparam COL_BITS = $clog2(WIDTH);
+    localparam COL_BITS = $clog2(MAX_WIDTH);
 
     // column and row counters
     reg [COL_BITS-1:0] col;
     reg [15:0] row;
 
     // line buffers
-    reg [7:0] line_buffer1 [0:WIDTH-1];
+    reg [7:0] line_buffer1 [0:MAX_WIDTH-1];
     reg [7:0] prev_row_pixel;
-    reg [7:0] line_buffer2 [0:WIDTH-1];
+    reg [7:0] line_buffer2 [0:MAX_WIDTH-1];
     reg [7:0] prev2_row_pixel;
 
     // 3x3 window shift registers
@@ -83,7 +84,7 @@ always @(posedge clk) begin
         r2_0 <= prev2_row_pixel;   
 
         //update counter
-        if (col == COL_BITS'(WIDTH-1)) begin
+        if (col == image_width[COL_BITS-1:0] - 1'b1) begin
             col <= 0;
             row <= row + 1;
         end else begin 
