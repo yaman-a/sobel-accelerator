@@ -1,42 +1,36 @@
-# -------- CONFIG --------
-SIM        = obj_dir/Vsobel
-INPUT_DIR  = images_in
-PGM_DIR    = build_pgm
-OUTPUT_DIR = images_out
+# Directories
+IN_DIR  := images_in
+PGM_DIR := build_pgm
+OUT_DIR := images_out
 
-# Supported extensions
-EXTS = jpg png jpeg
+# Default target
+all: sobel process
 
-# Find input files
-IMAGES := $(foreach ext,$(EXTS),$(wildcard $(INPUT_DIR)/*.$(ext)))
-
-# Extract base names
-BASE := $(notdir $(basename $(IMAGES)))
-
-# Final output targets
-OUT_IMAGES := $(addprefix $(OUTPUT_DIR)/,$(addsuffix _sobel.png,$(BASE)))
-
-# -------- DEFAULT TARGET --------
-all: build $(OUT_IMAGES)
-
-# -------- BUILD --------
-build:
+# Build sobel executable
+sobel:
 	verilator --cc rtl/sobel.v --exe sim/main.cpp --build
 
-# -------- MAIN RULE --------
-$(OUTPUT_DIR)/%_sobel.png:
-	mkdir -p $(PGM_DIR)
-	mkdir -p $(OUTPUT_DIR)
+# Process all images
+process:
+	mkdir -p "$(PGM_DIR)"
+	mkdir -p "$(OUT_DIR)"
+	@for file in "$(IN_DIR)"/*; do \
+		if [ -f "$$file" ]; then \
+			base=$$(basename "$$file"); \
+			name=$${base%.*}; \
+			safe_name=$$(echo "$$name" | tr ' ' '_'); \
+			echo "Processing $$base"; \
+			convert "$$file" -colorspace Gray -depth 8 -compress none \
+			    -define pgm:format=ascii "$(PGM_DIR)/$$safe_name.pgm"; \
+			./obj_dir/Vsobel "$(PGM_DIR)/$$safe_name.pgm" \
+			    "$(PGM_DIR)/$${safe_name}_out.pgm"; \
+			convert "$(PGM_DIR)/$${safe_name}_out.pgm" \
+			    "$(OUT_DIR)/$${safe_name}_sobel.png"; \
+		fi; \
+	done
+	@echo "Done."
 
-	# Find matching input file automatically
-	input_file=$$(ls $(INPUT_DIR)/$*.*); \
-	echo "Processing $$input_file"; \
-	convert $$input_file -colorspace Gray -depth 8 -compress none -define pgm:format=ascii $(PGM_DIR)/$*.pgm; \
-	./$(SIM) $(PGM_DIR)/$*.pgm $(PGM_DIR)/$*_out.pgm; \
-	convert $(PGM_DIR)/$*_out.pgm $@
-
-# -------- CLEAN --------
 clean:
 	rm -rf obj_dir
-	rm -rf $(PGM_DIR)
-	rm -rf $(OUTPUT_DIR)
+	rm -rf "$(PGM_DIR)"
+	rm -rf "$(OUT_DIR)"
