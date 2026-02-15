@@ -41,3 +41,5 @@
 *.dwo
 
 obj_dir/
+images_out/
+build_pgm/
