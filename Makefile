@@ -4,7 +4,7 @@ PGM_DIR := build_pgm
 OUT_DIR := images_out
 SV_DIR  := build_sv
 
-.PHONY: all sobel process tb test img_tb process_sv uart_tb uart_test uart_img clean
+.PHONY: all sobel process tb test img_tb process_sv uart_tb uart_test uart_img vga_test clean
 
 # Default target
 all: sobel process
@@ -100,6 +100,12 @@ uart_img: uart_tb
 	    -define pgm:format=ascii "$(PGM_DIR)/uart_in.pgm"
 	./$(SV_DIR)/uart/Vsobel_uart_tb +in="$(PGM_DIR)/uart_in.pgm" +out="$(PGM_DIR)/uart_out.pgm"
 	convert "$(PGM_DIR)/uart_out.pgm" "$(OUT_DIR)/uart_sobel.png"
+
+# VGA timing + test pattern; writes vga_frame.ppm (one captured frame)
+vga_test:
+	mkdir -p $(SV_DIR)
+	$(VERILATOR_SV) --top-module vga_tb rtl/vga_timing.sv rtl/vga_test_top.sv tb/vga_tb.sv -Mdir $(SV_DIR)/vga
+	./$(SV_DIR)/vga/Vvga_tb
 
 clean:
 	rm -rf obj_dir
