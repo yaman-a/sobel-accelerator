@@ -4,7 +4,7 @@ PGM_DIR := build_pgm
 OUT_DIR := images_out
 SV_DIR  := build_sv
 
-.PHONY: all sobel process tb test img_tb process_sv uart_tb uart_test uart_img vga_test clean
+.PHONY: all sobel process tb test img_tb process_sv uart_tb uart_test uart_img vga_test svga_test clean
 
 # Default target
 all: sobel process
@@ -83,7 +83,7 @@ process_sv: img_tb
 # Basys3 UART design (sobel_uart_top): bit-level testbench
 # ---------------------------------------------------------------
 
-UART_SRC := rtl/sobel.sv rtl/uart_rx.sv rtl/uart_tx.sv rtl/fifo_sync.sv rtl/sobel_uart_top.sv
+UART_SRC := rtl/sobel.sv rtl/uart_rx.sv rtl/uart_tx.sv rtl/fifo_sync.sv rtl/frame_rx.sv rtl/sobel_uart_top.sv
 
 uart_tb:
 	mkdir -p $(SV_DIR)
@@ -106,6 +106,13 @@ vga_test:
 	mkdir -p $(SV_DIR)
 	$(VERILATOR_SV) --top-module vga_tb rtl/vga_timing.sv rtl/vga_test_top.sv tb/vga_tb.sv -Mdir $(SV_DIR)/vga
 	./$(SV_DIR)/vga/Vvga_tb
+
+# Full system: UART in, Sobel, frame buffers, VGA out (captures and checks the VGA pixels)
+svga_test:
+	mkdir -p $(SV_DIR)
+	$(VERILATOR_SV) --top-module sobel_vga_tb rtl/sobel.sv rtl/uart_rx.sv rtl/uart_tx.sv rtl/fifo_sync.sv \
+	    rtl/frame_rx.sv rtl/frame_buf.sv rtl/vga_timing.sv rtl/sobel_vga_top.sv tb/sobel_vga_tb.sv -Mdir $(SV_DIR)/svga
+	./$(SV_DIR)/svga/Vsobel_vga_tb
 
 clean:
 	rm -rf obj_dir
