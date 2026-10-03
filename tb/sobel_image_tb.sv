@@ -137,13 +137,13 @@ module sobel_image_tb;
     endtask
 
     // One pixel per clock in row-major order. The result for the window
-    // centred on pixel n appears (W + 2) clocks after pixel n goes in, so two
+    // centred on pixel n appears (W + 3) clocks after pixel n goes in, so three
     // extra clocks are run after the last pixel to collect the final results.
     task automatic stream_image();
         int total;
         int centre;
 
-        total = W * H + 2;
+        total = W * H + 3;
         got   = new[W * H];
         seen  = new[W * H];
         for (int i = 0; i < W * H; i++) begin
@@ -163,7 +163,7 @@ module sobel_image_tb;
             #1;
 
             if (valid_out) begin
-                centre = a - (W + 2);
+                centre = a - (W + 3);
                 if (centre < 0 || centre >= W * H) begin
                     n_bad_index++;
                 end else begin

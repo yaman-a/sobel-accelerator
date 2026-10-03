@@ -51,11 +51,11 @@ int main(int argc, char** argv) {
 
     std::vector<int> output(width * height, 0);
 
-    // The module has a latency of (width + 2) clocks: the result for the window
-    // centred on pixel n appears on clock edge n + width + 2. Run a couple of
+    // The module has a latency of (width + 3) clocks: the result for the window
+    // centred on pixel n appears on clock edge n + width + 3. Run a few
     // extra clocks after the last pixel to collect the final results, and store
     // each result at the position of its centre pixel.
-    const int total_clocks = width * height + 2;
+    const int total_clocks = width * height + 3;
     for (int i = 0; i < total_clocks; i++) {
         top->valid_in = 1;
         top->pixel_in = (i < width * height) ? image[i] : 0;
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
         top->eval();
 
         if (top->valid_out) {
-            int centre = i - (width + 2);
+            int centre = i - (width + 3);
             if (centre >= 0 && centre < width * height) {
                 output[centre] = top->pixel_out;
             }

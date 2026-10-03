@@ -110,13 +110,13 @@ module sobel_tb;
 
     // Streams the image in row-major order, one pixel per accepted clock.
     // The DUT's result for the window centred on pixel n appears on the clock
-    // that is (W + 2) accepted clocks after pixel n was accepted, so two extra
+    // that is (W + 3) accepted clocks after pixel n was accepted, so three extra
     // clocks are run after the last pixel to collect the final results.
     task automatic stream_image(input bit stalls);
         int total;
         int centre;
 
-        total = W * H + 2;
+        total = W * H + 3;
         got   = new[W * H];
         seen  = new[W * H];
         for (int i = 0; i < W * H; i++) begin
@@ -148,7 +148,7 @@ module sobel_tb;
             #1;
 
             if (valid_out) begin
-                centre = a - (W + 2);
+                centre = a - (W + 3);
                 if (centre < 0 || centre >= W * H) begin
                     n_bad_index++;
                 end else begin
