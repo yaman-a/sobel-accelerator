@@ -15,7 +15,7 @@
 // Splitting the arithmetic over stages 2 and 3 keeps each stage short enough
 // to meet a 100 MHz clock on an Artix-7.
 module sobel #(
-    parameter int WIDTH = 4096   // maximum image width (line buffer depth)
+    // parameter int WIDTH = 4096   // maximum image width (line buffer depth)
 )(
     input  logic        clk,
     input  logic        rst,
