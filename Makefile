@@ -4,7 +4,7 @@ PGM_DIR := build_pgm
 OUT_DIR := images_out
 SV_DIR  := build_sv
 
-.PHONY: all sobel process tb test img_tb process_sv uart_tb uart_test uart_img vga_test svga_test clean
+.PHONY: all sobel process tb test img_tb process_sv uart_tb uart_test uart_img vga_test svga_test cam_test regress clean
 
 # Default target
 all: sobel process
@@ -111,8 +111,20 @@ vga_test:
 svga_test:
 	mkdir -p $(SV_DIR)
 	$(VERILATOR_SV) --top-module sobel_vga_tb rtl/sobel.sv rtl/uart_rx.sv rtl/uart_tx.sv rtl/fifo_sync.sv \
-	    rtl/frame_rx.sv rtl/frame_buf.sv rtl/vga_timing.sv rtl/sobel_vga_top.sv tb/sobel_vga_tb.sv -Mdir $(SV_DIR)/svga
+	    rtl/frame_rx.sv rtl/frame_buf.sv rtl/vga_timing.sv rtl/frame_store.sv rtl/sobel_vga_top.sv tb/sobel_vga_tb.sv -Mdir $(SV_DIR)/svga
 	./$(SV_DIR)/svga/Vsobel_vga_tb
+
+# Camera design against a behavioural OV7670 (SCCB set-up, pixel capture, Sobel, VGA). Takes about 30 s.
+cam_test:
+	mkdir -p $(SV_DIR)
+	$(VERILATOR_SV) --top-module sobel_cam_tb rtl/sobel.sv rtl/sccb_master.sv rtl/cam_init.sv \
+	    rtl/cam_capture.sv rtl/cam_frame_ctl.sv rtl/frame_buf.sv rtl/vga_timing.sv rtl/frame_store.sv \
+	    rtl/sobel_cam_core.sv tb/sobel_cam_tb.sv -Mdir $(SV_DIR)/cam
+	./$(SV_DIR)/cam/Vsobel_cam_tb
+
+# Every self-checking test in one go (about a minute). Stops at the first failure.
+regress: test uart_test vga_test svga_test cam_test
+	@echo "All regression tests done."
 
 clean:
 	rm -rf obj_dir
