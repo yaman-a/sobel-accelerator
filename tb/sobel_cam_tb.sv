@@ -272,7 +272,7 @@ module sobel_cam_tb;
         expect_true("camera configuration finished", led[0]);
         expect_true("every configuration write was acknowledged", !led[1]);
         expect_true("first write was the software reset (reg 12 = 80)", first_reg == 'h12 && first_data == 'h80);
-        expect_true("19 register writes", n_writes == 19);
+        expect_true("23 register writes", n_writes == 23);
         expect_true("no SCCB protocol errors", sccb_errs == 0);
 
         want[8'h3A] = 8'h04; want[8'h12] = 8'h10; want[8'h40] = 8'hC0; want[8'h0C] = 8'h04;
