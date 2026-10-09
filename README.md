@@ -9,6 +9,16 @@ monitor, all on a Digilent Basys3 (Artix-7 XC7A35T).
 
 ![Basys3 with the OV7670 camera wired to JB and JC](docs/board.jpg)
 
+## Demo
+
+The full setup: the OV7670 on the Basys3, an object in front of the camera, and the live Sobel output on the monitor.
+
+![Full demo: board, camera and monitor](docs/demo_full.gif)
+
+Switching views with `sw[1:0]` (Sobel, raw, side by side). The switches are on the left and the monitor on the right.
+
+![View modes](docs/modes.gif)
+
 ## What it does
 
 | Stage | Input | Output | Status |
@@ -153,6 +163,7 @@ make uart_test    # UART design
 make vga_test     # VGA timing
 make svga_test    # UART + VGA
 make cam_test     # camera design (about 30 s)
+make regress      # all of the above in one go
 ```
 
 To push one picture through the simulated UART design: `make uart_img IMG=images_in/photo.jpg`.
@@ -222,6 +233,17 @@ flicker and byte-order glitches, so tape the connectors or fix the camera in pla
 Bring-up order that worked: test pattern first (`sw[4]` up, `sw[1:0]`=`01`, press `btnC`), then
 live video (`sw[4]` down, press `btnC`).
 
+## Possible next steps
+
+- Fine-tune the camera window registers (HSTART/HSTOP) to remove the few-pixel offset.
+- Add a configurable display gain switch.
+- Combine the camera and UART paths so frames can be streamed to a PC as well.
+- Add a threshold stage to produce a binary edge map.
+
 ## License
 
 MIT, see `LICENSE`.
+
+<!-- ## Bee Movie GIF
+
+![Bee Movie GIF](docs/beemovie.gif) -->
